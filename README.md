@@ -1,8 +1,7 @@
 # supa_simple_qt_tg_bot
 just 2 files h and cpp file  (it not even lib 😱)  
-and this is enough to work with the Telegram API
+and this is enough to work with the Telegram API  
 ![1](https://github.com/poe6umba/supa_simple_qt_tg_bot/assets/24863642/80161d27-988d-4311-bb36-b05cd6a84e1a)
-
 # What can it do
 Сan send messages, pictures, videos
 Сan send buttons with or without callbacks and react on this
@@ -20,3 +19,8 @@ Or just override the handle methods in basetelegramworker
 This project is already an example  
 just write your token in main.c and run
 (i write in xubuntu 22.04, Qt version 5.15.3)
+
+# Examples Bots Images 
+![photo_2023-09-29_17-36-38](https://github.com/poe6umba/supa_simple_qt_tg_bot/assets/24863642/eb608130-a7d6-4141-82ca-423aa9122943)  
+![3](https://github.com/poe6umba/supa_simple_qt_tg_bot/assets/24863642/ccd53cab-d43e-409d-a879-8b62869ef024)  
+![2](https://github.com/poe6umba/supa_simple_qt_tg_bot/assets/24863642/7155ed7c-e9ba-495d-87a0-70c30b55873d)  
