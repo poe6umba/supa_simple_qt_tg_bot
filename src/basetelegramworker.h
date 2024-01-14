@@ -91,4 +91,6 @@ private:
     //if user send "command 12345" you get command = "invalid", argument = "command 12345"
     void virtual handle_command(QString command, QString argument, QString chat_id, QString user_id);
     void virtual handle_callback(QString callback_data, QString callback_id,  QString chat_id, QString user_id);
+    void virtual handle_location(double latitude, double longitude, QString chat_id, QString user_id);
+
 };

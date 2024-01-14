@@ -264,8 +264,13 @@ void baseTelegramWorker::handle_callback(QString callback_data, QString callback
     send_callback_response(callback_id, "Callback success!");
 }
 
-void baseTelegramWorker::update_bot() {
+void baseTelegramWorker::handle_location(double latitude, double longitude, QString chat_id, QString user_id)
+{
+    send_reply(chat_id, "Your location:" + QString::number(latitude) + " " + QString::number(longitude));
+}
 
+void baseTelegramWorker::update_bot()
+{
     while (mRunning) {
         load_last_update_id();
         // make request Telegram API with offset from JSON
@@ -319,6 +324,11 @@ void baseTelegramWorker::update_bot() {
                         } else if (!text.isEmpty()) {
                             //mb send invalid is not the best solution when there is no command in message
                             handle_command("invalid", text, chat_id, user_id);
+                        } else if (message.contains("location")) {  //location message looks like usual message, but without text
+                            QJsonObject location = message["location"].toObject();
+                            double lat = location["latitude"].toDouble();
+                            double lon = location["longitude"].toDouble();
+                            handle_location(lat,lon, chat_id, user_id);
                         }
                     } else if (updateObject.contains("callback_query")) {
                         // Parse callback
@@ -331,6 +341,18 @@ void baseTelegramWorker::update_bot() {
                         QJsonObject fromObject = callbackQuery["from"].toObject();
                         QString user_id = QString::number(fromObject["id"].toVariant().toULongLong());          
                         handle_callback(callback_data, callback_id, chat_id, user_id);
+                    } else if (updateObject.contains("edited_message")) {
+                        QJsonObject message = updateObject["edited_message"].toObject();
+                        QJsonObject chatObject = message["chat"].toObject();
+                        QString chat_id = QString::number(chatObject["id"].toVariant().toULongLong());
+                        QJsonObject fromObject = message["from"].toObject();
+                        QString user_id = QString::number(fromObject["id"].toVariant().toULongLong());
+                        if (message.contains("location")) { //translate location looks like edited message
+                            QJsonObject location = message["location"].toObject();
+                            double lat = location["latitude"].toDouble();
+                            double lon = location["longitude"].toDouble();
+                            handle_location(lat,lon, chat_id, user_id);
+                       }
                     }
                 }
 
