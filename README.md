@@ -22,7 +22,7 @@ This project is already an example
 just write your token in main.c and run
 (checked in xubuntu 22.04, Qt version 5.15.3)
 
-# Examples Bots Images 
+# Example of using a bot
 CI/CD notifier bot (run on build machine)  
 ![photo_2023-09-29_17-36-38](https://github.com/poe6umba/supa_simple_qt_tg_bot/assets/24863642/eb608130-a7d6-4141-82ca-423aa9122943)  
 

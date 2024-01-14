@@ -1,12 +1,13 @@
 #include "basetelegramworker.h"
 
 
-baseTelegramWorker::baseTelegramWorker(QString token_)
+baseTelegramWorker::baseTelegramWorker(const QString token):
+    mToken(token),
+    mRunning(false)
+
 {
-    token = token_;
     manager = new QNetworkAccessManager(this);
-    api_url = "https://api.telegram.org/bot" + token;
-    is_running = false;
+    apiUrl = "https://api.telegram.org/bot" + mToken;
 }
 
 baseTelegramWorker::~baseTelegramWorker()
@@ -14,18 +15,18 @@ baseTelegramWorker::~baseTelegramWorker()
 
 }
 
-void baseTelegramWorker::startThread()
+void baseTelegramWorker::start_thread()
 {
-    if (!is_running) {
-        is_running = true;
+    if (!mRunning) {
+        mRunning = true;
         update_bot();
     }
 }
 
-void baseTelegramWorker::stopThread()
+void baseTelegramWorker::stop_thread()
 {
-    if (is_running) {
-        is_running = false;
+    if (mRunning) {
+        mRunning = false;
     }
 }
 
@@ -34,7 +35,7 @@ void baseTelegramWorker::load_last_update_id()
     QFile file("last_update_id.json");
     if (file.open(QIODevice::ReadOnly)) {
         QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-        last_update_id = doc.object()["last_update_id"].toInt();
+        mLastUpdateId = doc.object()["last_update_id"].toInt();
         file.close();
     }
 }
@@ -44,7 +45,7 @@ void baseTelegramWorker::save_last_update_id()
     QFile file("last_update_id.json");
     if (file.open(QIODevice::WriteOnly)) {
         QJsonObject obj;
-        obj["last_update_id"] = last_update_id;
+        obj["last_update_id"] = mLastUpdateId;
         QJsonDocument doc(obj);
         file.write(doc.toJson());
         file.close();
@@ -53,7 +54,7 @@ void baseTelegramWorker::save_last_update_id()
 
 void baseTelegramWorker::send_reply(QString chat_id, QString text)
 {
-    QUrl url(api_url + "/sendMessage");
+    QUrl url(apiUrl + "/sendMessage");
     QUrlQuery query;
     query.addQueryItem("chat_id", chat_id);
     query.addQueryItem("text", text);
@@ -73,10 +74,10 @@ void baseTelegramWorker::send_reply(QString chat_id, QString text)
 
 void baseTelegramWorker::send_callback_response(QString callback_id, QString text)
 {
-    QUrl url(api_url + "/answerCallbackQuery");
+    QUrl url(apiUrl + "/answerCallbackQuery");
     QUrlQuery query;
     query.addQueryItem("callback_query_id", callback_id);
-    if(!text.isEmpty()) query.addQueryItem("text", text); // text answer for callback button press(if empty not sending)
+    if (!text.isEmpty()) query.addQueryItem("text", text); // text answer for callback button press(if empty not sending)
     query.addQueryItem("show_alert", "false");
 
     QNetworkRequest request(url);
@@ -96,7 +97,7 @@ void baseTelegramWorker::send_callback_response(QString callback_id, QString tex
 
 void baseTelegramWorker::send_reply_with_inline_keyboard(QString chat_id, QString text, QStringList buttons_names, QString callback_tag)
 {
-    QUrl url(api_url + "/sendMessage");
+    QUrl url(apiUrl + "/sendMessage");
     QUrlQuery query;
     query.addQueryItem("chat_id", chat_id);
     query.addQueryItem("text", text);
@@ -104,9 +105,7 @@ void baseTelegramWorker::send_reply_with_inline_keyboard(QString chat_id, QStrin
     QJsonArray inlineKeyboard;
 
     int i = 0;
-    for (const QString& Item : buttons_names)
-    {
-
+    for (const QString& Item : buttons_names) {
         const QString& Name = Item;
         QJsonObject button;
         button.insert("text", Name);
@@ -142,7 +141,7 @@ void baseTelegramWorker::send_reply_with_inline_keyboard(QString chat_id, QStrin
 
 void baseTelegramWorker::send_reply_with_reply_keyboard(QString chat_id, QString text, QStringList buttons_names)
 {
-    QUrl url(api_url + "/sendMessage");
+    QUrl url(apiUrl + "/sendMessage");
     QUrlQuery query;
     query.addQueryItem("chat_id", chat_id);
     query.addQueryItem("text", text);
@@ -150,8 +149,7 @@ void baseTelegramWorker::send_reply_with_reply_keyboard(QString chat_id, QString
         QJsonArray keyboardRows;
         QJsonArray currentRow;
 
-         for (const QString& Item : buttons_names)
-        {
+        for (const QString& Item : buttons_names) {
             const QString& Name = Item;
             QJsonObject button;
             button.insert("text", Name);
@@ -191,7 +189,7 @@ void baseTelegramWorker::send_reply_with_reply_keyboard(QString chat_id, QString
 
 void baseTelegramWorker::send_videofile(QString chat_id, const QString& videoFilePath)
 {
-    QUrl url(api_url + "/sendVideo");
+    QUrl url(apiUrl + "/sendVideo");
     QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
 
     QHttpPart chatIdPart;
@@ -223,7 +221,7 @@ void baseTelegramWorker::send_videofile(QString chat_id, const QString& videoFil
 
 void baseTelegramWorker::send_image(QString chat_id, const QString& imageFilePath)
 {
-    QUrl url(api_url + "/sendPhoto");
+    QUrl url(apiUrl + "/sendPhoto");
     QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
 
     QHttpPart chatIdPart;
@@ -268,12 +266,12 @@ void baseTelegramWorker::handle_callback(QString callback_data, QString callback
 
 void baseTelegramWorker::update_bot() {
 
-    while (is_running) {
+    while (mRunning) {
         load_last_update_id();
         // make request Telegram API with offset from JSON
-        QUrl url(api_url + "/getUpdates");
+        QUrl url(apiUrl + "/getUpdates");
         QUrlQuery query;
-        query.addQueryItem("offset", QString::number(last_update_id + 1));
+        query.addQueryItem("offset", QString::number(mLastUpdateId + 1));
         query.addQueryItem("timeout", "30");
         url.setQuery(query);
         QNetworkRequest request(url);
@@ -337,7 +335,7 @@ void baseTelegramWorker::update_bot() {
                 }
 
                 // Update offset in JSON
-                last_update_id = update.toObject()["update_id"].toInt();
+                mLastUpdateId = update.toObject()["update_id"].toInt();
                 save_last_update_id();
             }
         }

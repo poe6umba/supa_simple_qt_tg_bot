@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include "basetelegramworker.h"
+#include "src/basetelegramworker.h"
 
 
 //This is an example class

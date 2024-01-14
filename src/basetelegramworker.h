@@ -10,7 +10,7 @@
 //poe6umba 2023
 
 /*
-How does he work
+How does it work
 
 1) create an object
 2) call startThread
@@ -21,21 +21,38 @@ How does he work
 
     By changing the behavior of the handlers, you can completely change the logic of the bot
 
-that all, simple
+that all, gl
 
 */
 class baseTelegramWorker : public QObject
 {
     Q_OBJECT
 public:
-    baseTelegramWorker(QString token);
+    baseTelegramWorker(const QString token);
     ~baseTelegramWorker();
-    QString api_url;
+    QString apiUrl;
     QNetworkAccessManager* manager;
 
+    //sry for this :D
+    QString cube="\U0001F3B2", crown = "\U0001F451", thumbsUp = "\U0001F44D";
+    QString person = "\U0001F9D1";
+    QString smile = "\U0001F60A";
+    QString heartEyes = "\U0001F60D";
+    QString laughing = "\U0001F606";
+    QString kissing = "\U0001F618";
+    QString crying = "\U0001F62D";
+    QString skull = "\U00002620";
+    QString bomb = "\U0001F4A3";
+    QString robot = "\U0001F916";
+    QString fire = "\U0001F525";
+    QString rocket = "\U0001F680";
+    QString rock = "\U0000270A";
+    QString paper = "\U0000270B";
+    QString scissors = "\U0000270C";
+
 public slots:
-    void startThread();
-    void stopThread();
+    void start_thread();
+    void stop_thread();
 
     //thread function
     void update_bot();
@@ -53,9 +70,9 @@ public slots:
     void send_reply_with_reply_keyboard(QString chat_id, QString text, QStringList buttons_names);
 
 private:
-    QString token;
+    QString mToken;
 
-    bool is_running;
+    bool mRunning;
 
     /*
     This functions will determine the latest update_id and save it locally in a JSON file,
@@ -64,7 +81,7 @@ private:
     void load_last_update_id();
     void save_last_update_id();
 
-    int last_update_id = 0;
+    int mLastUpdateId = 0;
 
 
     //command - is exactly a command, what we write through /, if there is no command in the message, then “invalid” will come (you can replace "invalid" for something else in update_bot())
@@ -74,23 +91,4 @@ private:
     //if user send "command 12345" you get command = "invalid", argument = "command 12345"
     void virtual handle_command(QString command, QString argument, QString chat_id, QString user_id);
     void virtual handle_callback(QString callback_data, QString callback_id,  QString chat_id, QString user_id);
-
-public:
-
-    //sry for this :D
-    QString cube="\U0001F3B2", crown = "\U0001F451", thumbs_up = "\U0001F44D";
-    QString person = "\U0001F9D1";
-    QString smile = "\U0001F60A";
-    QString heart_eyes = "\U0001F60D";
-    QString laughing = "\U0001F606";
-    QString kissing = "\U0001F618";
-    QString crying = "\U0001F62D";
-    QString skull = "\U00002620";
-    QString bomb = "\U0001F4A3";
-    QString robot = "\U0001F916";
-    QString fire = "\U0001F525";
-    QString rocket = "\U0001F680";
-    QString rock = "\U0000270A";
-    QString paper = "\U0000270B";
-    QString scissors = "\U0000270C";
 };
